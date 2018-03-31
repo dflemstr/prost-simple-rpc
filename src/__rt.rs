@@ -1,5 +1,6 @@
 //! Utility functions used by generated code; this is *not* part of the crate's public API!
 use bytes;
+use failure;
 use prost;
 
 use error;
@@ -11,7 +12,7 @@ pub fn decode<B, M, E>(buf: B) -> error::Result<M, E>
 where
     B: bytes::IntoBuf,
     M: prost::Message + Default,
-    E: Send,
+    E: failure::Fail,
 {
     let message = prost::Message::decode(buf)?;
     Ok(message)
@@ -23,7 +24,7 @@ where
 pub fn encode<M, E>(message: M) -> error::Result<bytes::Bytes, E>
 where
     M: prost::Message,
-    E: Send,
+    E: failure::Fail,
 {
     let len = prost::Message::encoded_len(&message);
     let mut buf = ::bytes::BytesMut::with_capacity(len);

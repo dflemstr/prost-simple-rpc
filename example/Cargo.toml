@@ -12,6 +12,8 @@ path = "../build"
 
 [dependencies]
 bytes = "0.4.6"
+failure = "0.1.1"
+failure_derive = "0.1.1"
 futures = "0.1.20"
 prost = "0.3.2"
 prost-derive = "0.3.2"

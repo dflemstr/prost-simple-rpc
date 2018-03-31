@@ -1,4 +1,7 @@
 extern crate bytes;
+extern crate failure;
+#[macro_use]
+extern crate failure_derive;
 extern crate futures;
 extern crate prost;
 #[macro_use]
@@ -53,18 +56,22 @@ fn run_greeting_roundtrip() {
     tokio::run(future)
 }
 
+#[derive(Debug, Eq, Fail, PartialEq)]
+#[fail(display = "Error!")]
+struct Error;
+
 #[derive(Clone, Debug)]
 struct EchoService {
     fail: bool,
 }
 
 impl schema::echo::Echo for EchoService {
-    type Error = &'static str;
+    type Error = Error;
     type EchoFuture = futures::future::FutureResult<schema::echo::EchoResponse, Self::Error>;
 
     fn echo(&self, input: schema::echo::EchoRequest) -> Self::EchoFuture {
         if self.fail {
-            futures::future::err("OMG FAILURE!!!")
+            futures::future::err(Error)
         } else {
             futures::future::ok(schema::echo::EchoResponse { data: input.data })
         }
@@ -78,7 +85,7 @@ struct GreetingService {
 }
 
 impl schema::greeting::Greeting for GreetingService {
-    type Error = &'static str;
+    type Error = Error;
     type SayHelloFuture =
         futures::future::FutureResult<schema::greeting::SayHelloResponse, Self::Error>;
     type SayGoodbyeFuture =
@@ -86,7 +93,7 @@ impl schema::greeting::Greeting for GreetingService {
 
     fn say_hello(&self, input: schema::greeting::SayHelloRequest) -> Self::SayHelloFuture {
         if self.fail_hello {
-            futures::future::err("OMG FAILED HELLO!!!")
+            futures::future::err(Error)
         } else {
             futures::future::ok(schema::greeting::SayHelloResponse {
                 greeting: format!("Hello, {}!", input.name),
@@ -96,7 +103,7 @@ impl schema::greeting::Greeting for GreetingService {
 
     fn say_goodbye(&self, input: schema::greeting::SayGoodbyeRequest) -> Self::SayGoodbyeFuture {
         if self.fail_hello {
-            futures::future::err("OMG FAILED GOODBYE!!!")
+            futures::future::err(Error)
         } else {
             futures::future::ok(schema::greeting::SayGoodbyeResponse {
                 greeting: format!("Goodbye, {}!", input.name),
@@ -172,7 +179,7 @@ mod test {
         assert_eq!(
             *error.lock().unwrap(),
             Some(prost_simple_rpc::error::Error::execution(
-                prost_simple_rpc::error::Error::execution("OMG FAILURE!!!")
+                prost_simple_rpc::error::Error::execution(super::Error)
             ))
         );
     }

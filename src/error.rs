@@ -1,6 +1,7 @@
 //! Error type definitions for errors that can occur during RPC interactions.
 use std::result;
 
+use failure;
 use futures;
 use prost;
 
@@ -11,7 +12,7 @@ pub type Result<A, E> = result::Result<A, Error<E>>;
 #[derive(Clone, Debug, Eq, Fail, PartialEq)]
 pub enum Error<E>
 where
-    E: Send,
+    E: failure::Fail,
 {
     /// An error occurred during the execution of a (server) RPC endpoint or a (client) RPC transfer
     /// mechanism.
@@ -46,7 +47,7 @@ where
 
 impl<E> Error<E>
 where
-    E: Send,
+    E: failure::Fail,
 {
     /// Constructs a new execution error.
     pub fn execution(error: E) -> Self {
@@ -56,7 +57,7 @@ where
 
 impl<E> From<prost::DecodeError> for Error<E>
 where
-    E: Send,
+    E: failure::Fail,
 {
     fn from(error: prost::DecodeError) -> Self {
         Error::Decode { error }
@@ -65,7 +66,7 @@ where
 
 impl<E> From<prost::EncodeError> for Error<E>
 where
-    E: Send,
+    E: failure::Fail,
 {
     fn from(error: prost::EncodeError) -> Self {
         Error::Encode { error }
@@ -74,7 +75,7 @@ where
 
 impl<E> From<futures::Canceled> for Error<E>
 where
-    E: Send,
+    E: failure::Fail,
 {
     fn from(error: futures::Canceled) -> Self {
         Error::Canceled { error }

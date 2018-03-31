@@ -152,7 +152,7 @@ impl prost_build::ServiceGenerator for ServiceGenerator {
         write!(
             buf,
             r#"pub trait {name} {{
-    type Error: Send;
+    type Error: ::failure::Fail;
 {trait_types}
 {trait_methods}}}
 /// A service descriptor for a `{name}`.

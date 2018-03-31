@@ -55,10 +55,12 @@ fn main() {
 }
 ```
 
-Then, include the generated code in your Rust build, for example in `main.rs`:
+Then, include the generated code in your Rust build, for example in `main.rs`.  There are a bunch of
+extra crate dependencies for the generated code:
 
 ```rust
 extern crate bytes;
+extern crate failure;
 extern crate futures;
 extern crate prost;
 #[macro_use]
@@ -125,9 +127,13 @@ service:
 ```rust
 struct EchoService;
 
+#[derive(Debug, Eq, Fail, PartialEq)]
+#[fail(display = "Error!")]
+struct Error;
+
 impl schema::echo::Echo for EchoService {
     // You can supply an error type here if your service can fail.
-    type Error = ();
+    type Error = Error;
     // The future type used in the `echo()` method; you can of course use Box<Future<...>> here
     // but this library assumes unboxed futures by default.
     type EchoFuture = futures::future::FutureResult<schema::echo::EchoResponse, Self::Error>;
