@@ -1,3 +1,17 @@
+//! An example application using `prost-simple-rpc`.
+#![deny(missing_docs)]
+#![deny(missing_debug_implementations)]
+#![deny(missing_copy_implementations)]
+#![deny(trivial_casts)]
+#![deny(trivial_numeric_casts)]
+#![deny(unsafe_code)]
+#![deny(unstable_features)]
+#![deny(unused_import_braces)]
+#![deny(unused_qualifications)]
+#![cfg_attr(feature = "dev", allow(unstable_features))]
+#![cfg_attr(feature = "dev", feature(plugin))]
+#![cfg_attr(feature = "dev", plugin(clippy))]
+
 extern crate bytes;
 extern crate failure;
 #[macro_use]
@@ -179,7 +193,7 @@ mod test {
         assert_eq!(
             *error.lock().unwrap(),
             Some(prost_simple_rpc::error::Error::execution(
-                prost_simple_rpc::error::Error::execution(super::Error)
+                prost_simple_rpc::error::Error::execution(Error)
             ))
         );
     }

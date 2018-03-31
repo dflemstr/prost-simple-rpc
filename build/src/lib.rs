@@ -1,9 +1,54 @@
+//! A library for generating code to be used with `prost-simple-rpc`.
+//!
+//! Use the [`ServiceGenerator`](./struct.ServiceGenerator.html) with `prost-build` to generate
+//! the code:
+//!
+//! ```
+//! extern crate prost_build;
+//! extern crate prost_simple_rpc_build;
+//!
+//! fn main() {
+//! # ::std::env::set_var("OUT_DIR", ::std::env::temp_dir());
+//!     prost_build::Config::new()
+//!         .service_generator(Box::new(prost_simple_rpc_build::ServiceGenerator::new()))
+//!         .compile_protos(&["test/example.proto"], &["test"])
+//!         .unwrap();
+//! }
+//! ```
+#![deny(missing_docs)]
+#![deny(missing_debug_implementations)]
+#![deny(missing_copy_implementations)]
+#![deny(trivial_casts)]
+#![deny(trivial_numeric_casts)]
+#![deny(unsafe_code)]
+#![deny(unstable_features)]
+#![deny(unused_import_braces)]
+#![deny(unused_qualifications)]
+#![cfg_attr(feature = "dev", allow(unstable_features))]
+#![cfg_attr(feature = "dev", feature(plugin))]
+#![cfg_attr(feature = "dev", plugin(clippy))]
+
 extern crate heck;
 extern crate prost_build;
 
 use std::fmt;
 
-pub struct ServiceGenerator;
+/// The service generator to be used with `prost-build` to generate RPC implementations for
+/// `prost-simple-rpc`.
+///
+/// See the crate-level documentation for more info.
+#[allow(missing_copy_implementations)]
+#[derive(Clone, Debug)]
+pub struct ServiceGenerator {
+    _private: (),
+}
+
+impl ServiceGenerator {
+    /// Create a new `ServiceGenerator` instance with the default options set.
+    pub fn new() -> ServiceGenerator {
+        ServiceGenerator { _private: () }
+    }
+}
 
 impl prost_build::ServiceGenerator for ServiceGenerator {
     fn generate(&mut self, service: prost_build::Service, mut buf: &mut String) {

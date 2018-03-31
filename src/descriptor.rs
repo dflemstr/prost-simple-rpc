@@ -1,4 +1,4 @@
-//! Traits for generic service descriptor definitions.
+//! Traits for defining generic service descriptor definitions.
 //!
 //! These traits are built on the assumption that some form of code generation is being used (e.g.
 //! using only `&'static str`s) but it's of course possible to implement these traits manually.

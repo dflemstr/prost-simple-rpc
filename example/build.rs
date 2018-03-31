@@ -3,7 +3,7 @@ extern crate prost_simple_rpc_build;
 
 fn main() {
     prost_build::Config::new()
-        .service_generator(Box::new(prost_simple_rpc_build::ServiceGenerator))
+        .service_generator(Box::new(prost_simple_rpc_build::ServiceGenerator::new()))
         .compile_protos(
             &[
                 "src/schema/echo/service.proto",
