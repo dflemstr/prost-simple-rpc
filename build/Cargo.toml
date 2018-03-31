@@ -1,6 +1,9 @@
 [package]
 authors = ["David Flemström <david.flemstrom@gmail.com>"]
 name = "prost-simple-rpc-build"
+description = "Build script helpers for prost-simple-rpc"
+license = "MIT"
+repository = "https://github.com/dflemstr/prost-simple-rpc"
 version = "0.1.0"
 
 [dependencies]
