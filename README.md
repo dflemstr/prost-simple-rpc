@@ -7,6 +7,14 @@ This library lets you generate traits for implementing a generic RPC mechanism u
 the schema language.  You have to supply your own underlying transport mechanism, for example
 WebSockets, UNIX pipes, HTTP, etc.
 
+## TODO
+
+This library is quite complete but there are still a few things I would like to fix before a "1.0":
+
+  - [ ] Use unboxed futures in generated client code.
+  - [ ] Use unboxed futures in generated server code.
+  - [ ] Try to support execution errors that don't implement `failure::Fail`.
+
 ## Usage
 
 For the complete example, see the [example](./example) directory.
