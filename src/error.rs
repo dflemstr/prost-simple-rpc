@@ -2,7 +2,6 @@
 use std::result;
 
 use failure;
-use futures;
 use prost;
 
 /// A convenience type alias for creating a `Result` with the error being of type `Error`.
@@ -36,13 +35,6 @@ where
         #[cause]
         error: prost::EncodeError,
     },
-    /// An async cancellation occurred.
-    #[fail(display = "Canceled error: {}", error)]
-    Canceled {
-        /// The underlying canceled error.
-        #[cause]
-        error: futures::Canceled,
-    },
 }
 
 impl<E> Error<E>
@@ -70,14 +62,5 @@ where
 {
     fn from(error: prost::EncodeError) -> Self {
         Error::Encode { error }
-    }
-}
-
-impl<E> From<futures::Canceled> for Error<E>
-where
-    E: failure::Fail,
-{
-    fn from(error: futures::Canceled) -> Self {
-        Error::Canceled { error }
     }
 }
