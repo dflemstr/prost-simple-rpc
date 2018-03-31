@@ -1,0 +1,21 @@
+[package]
+authors = ["David Flemström <david.flemstrom@gmail.com>"]
+name = "prost-simple-rpc-example"
+publish = false
+version = "0.1.0"
+
+[build-dependencies]
+prost-build = "0.3.2"
+
+[build-dependencies.prost-simple-rpc-build]
+path = "../build"
+
+[dependencies]
+bytes = "0.4.6"
+futures = "0.1.20"
+prost = "0.3.2"
+prost-derive = "0.3.2"
+tokio = "0.1.5"
+
+[dependencies.prost-simple-rpc]
+path = ".."

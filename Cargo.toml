@@ -1,0 +1,22 @@
+[package]
+authors = ["David Flemström <david.flemstrom@gmail.com>"]
+name = "prost-simple-rpc"
+version = "0.1.0"
+
+[dependencies]
+bytes = "0.4.6"
+failure = "0.1.1"
+failure_derive = "0.1.1"
+futures = "0.1.20"
+prost = "0.3.2"
+
+[dependencies.clippy]
+optional = true
+version = "0.0.191"
+
+[workspace]
+members = ["build", "example"]
+
+[features]
+default = []
+dev = ["clippy"]

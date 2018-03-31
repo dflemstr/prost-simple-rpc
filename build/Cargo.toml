@@ -1,0 +1,8 @@
+[package]
+authors = ["David Flemström <david.flemstrom@gmail.com>"]
+name = "prost-simple-rpc-build"
+version = "0.1.0"
+
+[dependencies]
+heck = "0.3.0"
+prost-build = "0.3.2"
