@@ -3,11 +3,12 @@
 //! These traits are built on the assumption that some form of code generation is being used (e.g.
 //! using only `&'static str`s) but it's of course possible to implement these traits manually.
 use std::any;
+use std::fmt;
 
 /// A descriptor for an available RPC service.
 pub trait ServiceDescriptor {
     /// The associated type of method descriptors.
-    type Method: MethodDescriptor;
+    type Method: MethodDescriptor + fmt::Debug;
 
     /// The name of the service, used in Rust code and perhaps for human readability.
     fn name() -> &'static str;

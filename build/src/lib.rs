@@ -55,6 +55,11 @@ impl prost_build::ServiceGenerator for ServiceGenerator {
         use std::fmt::Write;
         use heck::CamelCase;
 
+        let descriptor_name = format!("{}Descriptor", service.name);
+        let server_name = format!("{}Server", service.name);
+        let client_name = format!("{}Client", service.name);
+        let method_descriptor_name = format!("{}MethodDescriptor", service.name);
+
         let mut trait_types = String::new();
         let mut trait_methods = String::new();
         let mut enum_methods = String::new();
@@ -84,7 +89,9 @@ impl prost_build::ServiceGenerator for ServiceGenerator {
 
             writeln!(
                 trait_types,
-                "    type {camel_case_name}Future: ::futures::Future<Item = {output_type}, Error = Self::Error> + Send;",
+                "    /// A future resulting from calling `{name}`.
+    type {camel_case_name}Future: ::futures::Future<Item = {output_type}, Error = Self::Error> + Send;",
+                name = method.name,
                 camel_case_name = method.name.to_camel_case(),
                 output_type = method.output_type
             ).unwrap();
@@ -109,19 +116,17 @@ impl prost_build::ServiceGenerator for ServiceGenerator {
 
             writeln!(
                 client_types,
-                "    type {camel_case_name}Future = Box<::futures::Future<Item = {output_type}, Error = Self::Error> + Send>;",
+                "    type {camel_case_name}Future = ::prost_simple_rpc::__rt::ClientFuture<H, {input_type}, {output_type}>;",
                 camel_case_name = method.name.to_camel_case(),
-                output_type = method.output_type
+                input_type = method.input_type,
+                output_type = method.output_type,
             ).unwrap();
 
             writeln!(
                 client_methods,
-                r#"    fn {name}(&self, input: {input_type})
-        -> Self::{camel_case_name}Future
-    {{
+                r#"    fn {name}(&self, input: {input_type}) -> Self::{camel_case_name}Future {{
         {client_name}::{name}_inner(self.0.clone(), input)
-    }}
-"#,
+    }}"#,
                 name = method.name,
                 camel_case_name = method.name.to_camel_case(),
                 input_type = method.input_type,
@@ -130,24 +135,15 @@ impl prost_build::ServiceGenerator for ServiceGenerator {
 
             writeln!(
                 client_own_methods,
-                r#"    fn {name}_inner(mut handler: H, input: {input_type})
-        -> <Self as {trait_name}>::{camel_case_name}Future
-    {{
-        use futures::Future;
-        Box::new(::futures::future::result(::prost_simple_rpc::__rt::encode(input))
-            .and_then(move |i| {{
-                handler.call({service_name}MethodDescriptor::{proto_name}, i)
-                    .map_err(|e| ::prost_simple_rpc::error::Error::execution(e))
-            }})
-            .and_then(::prost_simple_rpc::__rt::decode))
-    }}
-"#,
+                r#"    fn {name}_inner(handler: H, input: {input_type}) -> <Self as {trait_name}>::{camel_case_name}Future {{
+        ::prost_simple_rpc::__rt::ClientFuture::new(handler, input, {method_descriptor_name}::{proto_name})
+    }}"#,
                 trait_name = service.name,
                 name = method.name,
                 camel_case_name = method.name.to_camel_case(),
+                method_descriptor_name = method_descriptor_name,
+                proto_name = method.proto_name,
                 input_type = method.input_type,
-                service_name = service.name,
-                proto_name = method.proto_name
             ).unwrap();
 
             let case = format!(
@@ -221,6 +217,7 @@ pub struct {client_name}<H>(H) where H: ::prost_simple_rpc::handler::Handler;
 pub enum {method_descriptor_name} {{
 {enum_methods}}}
 impl<A> {server_name}<A> where A: {name} + Clone + Send + 'static {{
+    /// Creates a new server instance that dispatches all calls to the supplied service.
     pub fn new(service: A) -> {server_name}<A> {{
         {server_name}(service)
     }}
@@ -238,6 +235,7 @@ impl<A> {server_name}<A> where A: {name} + Clone + Send + 'static {{
     }}
 }}
 impl<H> {client_name}<H> where H: ::prost_simple_rpc::handler::Handler<Descriptor = {descriptor_name}> {{
+    /// Creates a new client instance that delegates all method calls to the supplied handler.
     pub fn new(handler: H) -> {client_name}<H> {{
         {client_name}(handler)
     }}
@@ -299,10 +297,10 @@ impl ::prost_simple_rpc::descriptor::MethodDescriptor for {method_descriptor_nam
 }}
 "#,
             name = service.name,
-            descriptor_name = format!("{}Descriptor", service.name),
-            server_name = format!("{}Server", service.name),
-            client_name = format!("{}Client", service.name),
-            method_descriptor_name = format!("{}MethodDescriptor", service.name),
+            descriptor_name = descriptor_name,
+            server_name = server_name,
+            client_name = client_name,
+            method_descriptor_name = method_descriptor_name,
             proto_name = service.proto_name,
             trait_types = trait_types,
             trait_methods = trait_methods,

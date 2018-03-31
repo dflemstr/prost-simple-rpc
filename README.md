@@ -11,7 +11,8 @@ WebSockets, UNIX pipes, HTTP, etc.
 
 This library is quite complete but there are still a few things I would like to fix before a "1.0":
 
-  - [ ] Use unboxed futures in generated client code.
+  - [ ] Clean up the code generation code.
+  - [x] Use unboxed futures in generated client code.
   - [ ] Use unboxed futures in generated server code.
   - [ ] Try to support execution errors that don't implement `failure::Fail`.
 
