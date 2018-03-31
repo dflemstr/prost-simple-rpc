@@ -29,11 +29,20 @@ where
     Done(marker::PhantomData<O>),
 }
 
+/// A future returned by a server call.
+#[derive(Debug)]
+pub enum ServerFuture<A, E, F, I, O> {
+    /// The message has not yet been decoded.
+    Decode(bytes::Bytes, A, fn(A, I) -> F),
+    /// The message was given to the handling method but the future is not yet done.
+    Execute(F),
+    /// We have returned the response to the caller.
+    Done(marker::PhantomData<E>, marker::PhantomData<O>),
+}
+
 impl<H, I, O> ClientFuture<H, I, O>
 where
     H: handler::Handler,
-    I: prost::Message,
-    O: prost::Message + Default,
 {
     pub fn new(
         handler: H,
@@ -71,6 +80,45 @@ where
                     Err(err) => return Err(error::Error::execution(err)),
                 },
                 ClientFuture::Done(_) => panic!("cannot poll a client future twice"),
+            }
+        }
+    }
+}
+
+impl<A, E, F, I, O> ServerFuture<A, E, F, I, O> {
+    pub fn new(input: bytes::Bytes, handler: A, method: fn(A, I) -> F) -> Self {
+        ServerFuture::Decode(input, handler, method)
+    }
+}
+
+impl<A, E, F, I, O> futures::Future for ServerFuture<A, E, F, I, O>
+where
+    E: failure::Fail,
+    F: futures::Future<Item = O, Error = E>,
+    I: prost::Message + Default,
+    O: prost::Message,
+{
+    type Item = bytes::Bytes;
+    type Error = error::Error<E>;
+
+    fn poll(&mut self) -> futures::Poll<Self::Item, Self::Error> {
+        loop {
+            match mem::replace(self, ServerFuture::Done(marker::PhantomData, marker::PhantomData)) {
+                ServerFuture::Decode(bytes, handler, method) => {
+                    let input = decode::<_, I, _>(bytes)?;
+                    *self = ServerFuture::Execute(method(handler, input));
+                }
+                ServerFuture::Execute(mut future) => match future.poll() {
+                    Ok(futures::Async::Ready(output)) => {
+                        return Ok(futures::Async::Ready(encode(output)?));
+                    }
+                    Ok(futures::Async::NotReady) => {
+                        *self = ServerFuture::Execute(future);
+                        return Ok(futures::Async::NotReady);
+                    }
+                    Err(err) => return Err(error::Error::execution(err)),
+                },
+                ServerFuture::Done(_, _) => panic!("cannot poll a server future twice"),
             }
         }
     }
