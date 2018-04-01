@@ -6,7 +6,7 @@ use std::any;
 use std::fmt;
 
 /// A descriptor for an available RPC service.
-pub trait ServiceDescriptor {
+pub trait ServiceDescriptor: Clone + fmt::Debug + Send + Sync {
     /// The associated type of method descriptors.
     type Method: MethodDescriptor + fmt::Debug;
 
@@ -21,7 +21,7 @@ pub trait ServiceDescriptor {
 }
 
 /// A descriptor for a method available on an RPC service.
-pub trait MethodDescriptor: Copy {
+pub trait MethodDescriptor: Clone + Copy + fmt::Debug + Send + Sync {
     /// The name of the service, used in Rust code and perhaps for human readability.
     fn name(&self) -> &'static str;
 
