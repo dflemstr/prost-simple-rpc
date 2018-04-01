@@ -1,6 +1,7 @@
 //! Traits for defining generic RPC handlers.
+use std::fmt;
+
 use bytes;
-use failure;
 use futures;
 
 use descriptor;
@@ -11,7 +12,7 @@ use descriptor;
 /// a network to fulfill a request.
 pub trait Handler: Clone + Send + 'static {
     /// The type of errors that this handler might generate, beyond the default RPC error type.
-    type Error: failure::Fail;
+    type Error: fmt::Display + fmt::Debug + Send + Sync + 'static;
     /// The service descriptor for the service whose requests this handler can handle.
     type Descriptor: descriptor::ServiceDescriptor;
     /// The future that results from a call to the `call` method of this trait.

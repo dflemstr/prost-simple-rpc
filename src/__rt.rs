@@ -1,9 +1,9 @@
 //! Utility functions used by generated code; this is *not* part of the crate's public API!
+use std::fmt;
 use std::marker;
 use std::mem;
 
 use bytes;
-use failure;
 use futures;
 use prost;
 
@@ -81,7 +81,7 @@ pub fn decode<B, M, E>(buf: B) -> error::Result<M, E>
 where
     B: bytes::IntoBuf,
     M: prost::Message + Default,
-    E: failure::Fail,
+    E: fmt::Display + fmt::Debug + Send + Sync + 'static,
 {
     let message = prost::Message::decode(buf)?;
     Ok(message)
@@ -91,7 +91,7 @@ where
 pub fn encode<M, E>(message: M) -> error::Result<bytes::Bytes, E>
 where
     M: prost::Message,
-    E: failure::Fail,
+    E: fmt::Display + fmt::Debug + Send + Sync + 'static,
 {
     let len = prost::Message::encoded_len(&message);
     let mut buf = ::bytes::BytesMut::with_capacity(len);

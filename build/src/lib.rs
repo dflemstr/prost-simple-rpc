@@ -193,7 +193,7 @@ impl prost_build::ServiceGenerator for ServiceGenerator {
         write!(
             buf,
             r#"pub trait {name} {{
-    type Error: ::failure::Fail;
+    type Error: ::std::fmt::Display + ::std::fmt::Debug + Send + Sync + 'static;
 {trait_types}
 {trait_methods}}}
 /// A service descriptor for a `{name}`.
