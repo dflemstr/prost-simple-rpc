@@ -34,7 +34,8 @@ pub enum Error<E> {
     },
 }
 
-impl<E> Error<E> where
+impl<E> Error<E>
+where
     E: fmt::Display + fmt::Debug + Send + Sync + 'static,
 {
     /// Constructs a new execution error.
