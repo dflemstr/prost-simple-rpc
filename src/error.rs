@@ -1,7 +1,7 @@
 //! Error type definitions for errors that can occur during RPC interactions.
+use std::fmt;
 use std::result;
 
-use failure;
 use prost;
 
 /// A convenience type alias for creating a `Result` with the error being of type `Error`.
@@ -9,10 +9,7 @@ pub type Result<A, E> = result::Result<A, Error<E>>;
 
 /// An error has occurred.
 #[derive(Clone, Debug, Eq, Fail, PartialEq)]
-pub enum Error<E>
-where
-    E: failure::Fail,
-{
+pub enum Error<E> {
     /// An error occurred during the execution of a (server) RPC endpoint or a (client) RPC transfer
     /// mechanism.
     #[fail(display = "Execution error: {}", error)]
@@ -37,9 +34,8 @@ where
     },
 }
 
-impl<E> Error<E>
-where
-    E: failure::Fail,
+impl<E> Error<E> where
+    E: fmt::Display + fmt::Debug + Send + Sync + 'static,
 {
     /// Constructs a new execution error.
     pub fn execution(error: E) -> Self {
@@ -47,19 +43,13 @@ where
     }
 }
 
-impl<E> From<prost::DecodeError> for Error<E>
-where
-    E: failure::Fail,
-{
+impl<E> From<prost::DecodeError> for Error<E> {
     fn from(error: prost::DecodeError) -> Self {
         Error::Decode { error }
     }
 }
 
-impl<E> From<prost::EncodeError> for Error<E>
-where
-    E: failure::Fail,
-{
+impl<E> From<prost::EncodeError> for Error<E> {
     fn from(error: prost::EncodeError) -> Self {
         Error::Encode { error }
     }
