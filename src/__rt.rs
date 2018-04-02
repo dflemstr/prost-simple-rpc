@@ -56,7 +56,7 @@ where
     fn poll(&mut self) -> futures::Poll<Self::Item, Self::Error> {
         loop {
             match mem::replace(self, ClientFuture::Done(marker::PhantomData)) {
-                ClientFuture::Encode(input, mut handler, method) => {
+                ClientFuture::Encode(input, handler, method) => {
                     let input_bytes = encode(input)?;
                     *self = ClientFuture::Call(handler.call(method, input_bytes));
                 }

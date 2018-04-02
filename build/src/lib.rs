@@ -255,7 +255,7 @@ impl<A> ::prost_simple_rpc::handler::Handler for {server_name}<A> where A: {name
     type CallFuture = Box<::futures::Future<Item = ::bytes::Bytes, Error = Self::Error> + Send>;
 
     fn call(
-        &mut self,
+        &self,
         method: {method_descriptor_name},
         input: ::bytes::Bytes)
         -> Self::CallFuture

@@ -20,7 +20,7 @@ pub trait Handler: Clone + Send + 'static {
 
     /// Perform a raw call to the specified service and method.
     fn call(
-        &mut self,
+        &self,
         method: <Self::Descriptor as descriptor::ServiceDescriptor>::Method,
         input: bytes::Bytes,
     ) -> Self::CallFuture;
