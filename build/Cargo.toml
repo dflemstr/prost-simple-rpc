@@ -4,7 +4,7 @@ name = "prost-simple-rpc-build"
 description = "Build script helpers for prost-simple-rpc"
 license = "MIT"
 repository = "https://github.com/dflemstr/prost-simple-rpc"
-version = "0.2.1"
+version = "0.2.2-alpha.0"
 
 [dependencies]
 heck = "0.3.0"
