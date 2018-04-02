@@ -16,6 +16,9 @@ pub trait ServiceDescriptor: Clone + fmt::Debug + Send + Sync {
     /// The raw protobuf name of the service.
     fn proto_name() -> &'static str;
 
+    /// The package name of the service.
+    fn package() -> &'static str;
+
     /// All of the available methods on the service.
     fn methods() -> &'static [Self::Method];
 }

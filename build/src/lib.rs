@@ -244,6 +244,7 @@ impl ::prost_simple_rpc::descriptor::ServiceDescriptor for {descriptor_name} {{
     type Method = {method_descriptor_name};
     fn name() -> &'static str {{ {name:?} }}
     fn proto_name() -> &'static str {{ {proto_name:?} }}
+    fn package() -> &'static str {{ {package:?} }}
     fn methods() -> &'static [Self::Method] {{
         &[
 {list_enum_methods}        ]
@@ -302,6 +303,7 @@ impl ::prost_simple_rpc::descriptor::MethodDescriptor for {method_descriptor_nam
             client_name = client_name,
             method_descriptor_name = method_descriptor_name,
             proto_name = service.proto_name,
+            package = service.package,
             trait_types = trait_types,
             trait_methods = trait_methods,
             enum_methods = enum_methods,
