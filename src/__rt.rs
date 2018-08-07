@@ -1,9 +1,9 @@
 //! Utility functions used by generated code; this is *not* part of the crate's public API!
-use std::fmt;
 use std::marker;
 use std::mem;
 
 use bytes;
+use failure;
 use futures;
 use prost;
 
@@ -62,7 +62,7 @@ where
                 }
                 ClientFuture::Call(mut future) => match future.poll() {
                     Ok(futures::Async::Ready(bytes)) => {
-                        return Ok(futures::Async::Ready(decode::<_, O, _>(bytes)?));
+                        return Ok(futures::Async::Ready(decode::<O, _>(bytes)?));
                     }
                     Ok(futures::Async::NotReady) => {
                         *self = ClientFuture::Call(future);
@@ -77,11 +77,10 @@ where
 }
 
 /// Efficiently decode a particular message type from a byte buffer.
-pub fn decode<B, M, E>(buf: B) -> error::Result<M, E>
+pub fn decode<M, E>(buf: bytes::Bytes) -> error::Result<M, E>
 where
-    B: bytes::IntoBuf,
     M: prost::Message + Default,
-    E: fmt::Display + fmt::Debug + Send + Sync + 'static,
+    E: failure::Fail,
 {
     let message = prost::Message::decode(buf)?;
     Ok(message)
@@ -91,7 +90,7 @@ where
 pub fn encode<M, E>(message: M) -> error::Result<bytes::Bytes, E>
 where
     M: prost::Message,
-    E: fmt::Display + fmt::Debug + Send + Sync + 'static,
+    E: failure::Fail,
 {
     let len = prost::Message::encoded_len(&message);
     let mut buf = ::bytes::BytesMut::with_capacity(len);

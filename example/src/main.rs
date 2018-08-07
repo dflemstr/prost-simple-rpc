@@ -31,8 +31,8 @@ fn main() {
 }
 
 fn run_echo_roundtrip() {
-    use schema::echo::Echo;
     use futures::Future;
+    use schema::echo::Echo;
 
     let server = schema::echo::EchoServer::new(EchoService { fail: false });
     let client = schema::echo::EchoClient::new(server);
@@ -49,8 +49,8 @@ fn run_echo_roundtrip() {
 }
 
 fn run_greeting_roundtrip() {
-    use schema::greeting::Greeting;
     use futures::Future;
+    use schema::greeting::Greeting;
 
     let server = schema::greeting::GreetingServer::new(GreetingService {
         fail_hello: false,
@@ -133,8 +133,8 @@ mod test {
 
     #[test]
     fn echo_success() {
-        use schema::echo::Echo;
         use futures::Future;
+        use schema::echo::Echo;
 
         let server = schema::echo::EchoServer::new(EchoService { fail: false });
         let client = schema::echo::EchoClient::new(server);
@@ -166,8 +166,8 @@ mod test {
 
     #[test]
     fn echo_fail() {
-        use schema::echo::Echo;
         use futures::Future;
+        use schema::echo::Echo;
 
         let server = schema::echo::EchoServer::new(EchoService { fail: true });
         let client = schema::echo::EchoClient::new(server);

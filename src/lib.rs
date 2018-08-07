@@ -179,8 +179,8 @@ extern crate failure_derive;
 extern crate futures;
 extern crate prost;
 
+#[doc(hidden)]
+pub mod __rt;
 pub mod descriptor;
 pub mod error;
 pub mod handler;
-#[doc(hidden)]
-pub mod __rt;

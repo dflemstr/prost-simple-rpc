@@ -52,8 +52,8 @@ impl ServiceGenerator {
 
 impl prost_build::ServiceGenerator for ServiceGenerator {
     fn generate(&mut self, service: prost_build::Service, mut buf: &mut String) {
-        use std::fmt::Write;
         use heck::CamelCase;
+        use std::fmt::Write;
 
         let descriptor_name = format!("{}Descriptor", service.name);
         let server_name = format!("{}Server", service.name);
@@ -193,7 +193,7 @@ impl prost_build::ServiceGenerator for ServiceGenerator {
         write!(
             buf,
             r#"pub trait {name} {{
-    type Error: ::std::fmt::Display + ::std::fmt::Debug + Send + Sync + 'static;
+    type Error: ::failure::Fail;
 {trait_types}
 {trait_methods}}}
 /// A service descriptor for a `{name}`.
